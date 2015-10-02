@@ -219,7 +219,12 @@ build = {
     ["kong.plugins.hmac-auth.access"] = "kong/plugins/hmac-auth/access.lua",
     ["kong.plugins.hmac-auth.schema"] = "kong/plugins/hmac-auth/schema.lua",
     ["kong.plugins.hmac-auth.api"] = "kong/plugins/hmac-auth/api.lua",
-    ["kong.plugins.hmac-auth.daos"] = "kong/plugins/hmac-auth/daos.lua"
+    ["kong.plugins.hmac-auth.daos"] = "kong/plugins/hmac-auth/daos.lua",
+
+    ["kong.plugins.helloworld.handler"] = "kong/plugins/helloworld/handler.lua",
+    ["kong.plugins.helloworld.access"] = "kong/plugins/helloworld/access.lua",
+    ["kong.plugins.helloworld.schema"] = "kong/plugins/helloworld/schema.lua"
+
   },
   install = {
     conf = { "kong.yml" },

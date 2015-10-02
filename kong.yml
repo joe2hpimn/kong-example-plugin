@@ -19,6 +19,7 @@ plugins_available:
   - request-size-limiting
   - rate-limiting
   - response-ratelimiting
+  - helloworld
 
 ## The Kong working directory
 ## (Make sure you have read and write permissions)
