@@ -18,13 +18,13 @@ Kong is an open-source API proxy based on NGINX, which aims to "secure, manage a
 #### Git Clone
 
 ```
-$ git clone https://github.com/jason-riddle/kong-plugin-example.git --recursive
+$ git clone https://github.com/jason-riddle/kong-example-plugin.git --recursive
 ```
 
 OR
 
 ```
-$ git clone https://github.com/jason-riddle/kong-plugin-example.git
+$ git clone https://github.com/jason-riddle/kong-example-plugin.git
 $ git submodule update --init
 ```
 
