@@ -1,159 +1,280 @@
-# Microservice & API Management Layer
+## Kong Plugin Tutorial
 
-[![Build Status][travis-badge]][travis-url]
-[![Circle CI][circleci-badge]][circleci-url]
-[![Gitter Badge][gitter-badge]][gitter-url]
+#### Note: Modified from [developing-an-helloworld-kong-plugin](http://streamdata.io/blog/developing-an-helloworld-kong-plugin/)
 
-[![][kong-logo]][kong-url]
+## What is Kong?
 
-Kong was created to secure, manage and extend Microservices & APIs. Kong is powered by the battle-tested tech of **NGINX** with a focus on scalability, high performance & reliability. Kong runs in production at [Mashape][mashape-url] and many other companies, handling billions of requests/month.
+Kong is an open-source API proxy based on NGINX, which aims to "secure, manage and extend APIs and Microservices" thanks to a plugins oriented architecture. Ok. Nice sentences but what does it do actually?
 
-- Website: [getkong.org][kong-url]
-- Documentation: [getkong.org/docs][kong-docs]
-- Mailing List: [Google Groups][google-groups-url]
+![Kong Logo](images/kong-logo.png)
 
-## Summary
+| Legacy Architecture                            | Kong Architecture                         |
+| ---------------------------------------------- | ----------------------------------------- |
+| ![Legacy Architecture](images/legacy-arch.png) | ![Kong Architecture](images/kong-arch.png)|
+| Legacy and Harder to Maintain                  | New and Easier to Maintain                |
 
-- [**Features**](#features)
-- [**Why Kong?**](#why-kong)
-- [**Benchmarks**](#benchmarks)
-- [**Resources & Distros**](#resources)
-- [**Roadmap**](#roadmap)
-- [**Development**](#development)
-- [**Enterprise Support**](#enterprise-support)
-- [**License**](#license)
+## Preparing
 
-## Features
-
-- **CLI**: Control your Kong cluster from the command line just like Neo in The Matrix.
-- **REST API**: Kong can be operated with its RESTful API for maximum flexibility.
-- **Scalability**: Distributed by nature, Kong scales horizontally simply by adding nodes.
-- **Performance**: Kong handles load with ease by scaling and using NGINX at the core.
-- **Plugins**: Extendable architecture for adding functionality to Kong and APIs.
-  - **OAuth2.0**: Add easily an OAuth2.0 authentication to your APIs.
-  - **Logging**: Log requests and responses to your system over HTTP, TCP, UDP or to disk.
-  - **IP-restriction**: Whitelist or blacklist IPs that can make requests.
-  - **Analytics**: Visualize, Inspect and Monitor API traffic with [Mashape Analytics](https://apianalytics.com).
-  - **SSL**: Setup a specific SSL certificate for an underlying service or API
-  - **Monitoring**: Live monitoring provides key load and performance server metrics.
-  - **Authentication**: Manage consumer credentials query string and header tokens.
-  - **Rate-limiting**: Block and throttle requests based on IP, authentication or body size.
-  - **Transformations**: Add, remove or manipulate HTTP requests and responses.
-  - **CORS**: Enable cross-origin requests to your APIs that would otherwise be blocked.
-  - **Anything**: Need custom functionality? Extend Kong with your own Lua plugins!
-
-For more info about plugins, you can check out the [Plugin Gallery](https://getkong.org/plugins/).
-
-## Why Kong?
-
-If you're building for web, mobile or IoT (Internet of Things) you will likely end up needing common functionality on top of your actual software. Kong can help by acting as a gateway for HTTP requests while providing logging, authentication, rate-limiting and more through plugins.
-
-[![][kong-benefits]][kong-url]
-
-## Benchmarks
-
-We've load tested Kong and Cassandra on AWS; you can see our [benchmark report here](http://getkong.org/about/benchmark/).
-
-## Resources
-
-Kong comes in many shapes. While this repository contains its core's source code, other repos are also under active development:
-
-- [Kong Docker](https://github.com/Mashape/docker-kong): A Dockerfile for running Kong in Docker.
-- [Kong Vagrant](https://github.com/Mashape/kong-vagrant): A Vagrantfile for provisioning a development ready environment for Kong.
-- [Kong Homebrew](https://github.com/Mashape/homebrew-kong): Homebrew Formula for Kong.
-- [Kong CloudFormation](https://github.com/Mashape/kong-dist-cloudformation): Kong in a 1-click deployment for AWS EC2
-- [Kong AWS AMI](https://aws.amazon.com/marketplace/pp/B014GHERVU/ref=srh_res_product_image?ie=UTF8&sr=0-2&qid=1440801656966): Kong AMI on the AWS Marketplace.
-- [Kong Distributions](https://github.com/Mashape/kong-distributions): Packaging scripts for deb, rpm and osx distributions.
-
-## Roadmap
-
-You can find a detailed Roadmap of Kong on the [Wiki](https://github.com/Mashape/kong/wiki).
-
-## Development
-
-If you are planning on developing on Kong (writing your own plugin or contribute to the core), you'll need a development installation.
-
-#### Vagrant
-
-You can use a Vagrant box running Kong and Cassandra that you can find at [Mashape/kong-vagrant](https://github.com/Mashape/kong-vagrant).
-
-#### Source Install
-
-First, you will need to already have Kong installed. Install Kong by following one of the methods described at [getkong.org/download](http://getkong.org/download). Then, make sure you have downloaded [Cassandra](http://cassandra.apache.org/download/) and that it is running. These steps will override your Kong installation with the latest source from the master branch:
-
-```shell
-$ git clone https://github.com/Mashape/kong
-$ cd kong/
-
-# Build and install Kong globally using Luarocks, overriding the version previously installed
-$ [sudo] make install
-
-# Install all development dependencies and create your environment configuration files
-$ make dev
-
-# Finally, run Kong with the just created development configuration
-$ kong start -c kong_DEVELOPMENT.yml
-```
-
-The `lua_package_path` directive in the configuration specifies that the Lua code in your local folder will be used in favor of the system installation. The `lua_code_cache` directive being turned off, you can start Kong, edit your local files, and test your code without restarting Kong.
-
-#### Makefile Operations
-
-When developing, use the `Makefile` for doing the following operations:
-
-| Name          | Description                                                              |
-| -------------:| -------------------------------------------------------------------------|
-| `install`     | Install the Kong luarock globally                                        |
-| `dev`         | Setup your development environment                                       |
-| `clean`       | Clean your development environment                                       |
-| `start`       | Start the `DEVELOPMENT` environment (`kong_DEVELOPMENT.yml`)             |
-| `restart`     | Restart the `DEVELOPMENT` environment (`kong_DEVELOPMENT.yml`)           |
-| `seed`        | Seed the `DEVELOPMENT` environment (`kong_DEVELOPMENT.yml`)              |
-| `drop`        | Drop the `DEVELOPMENT` environment (`kong_DEVELOPMENT.yml`)              |
-| `lint`        | Lint Lua files in `kong/` and `spec/`                                    |
-| `test`        | Run the unit tests                                                       |
-| `test-integration` | Run the integration tests (Kong + DAO)                               |
-| `test-plugins` | Run unit + integration tests of all plugins                              |
-| `test-all`    | Run all unit + integration tests at once                                 |
-| `coverage`    | Run all tests + coverage report                                          |
-
-## Enterprise Support
-
-Support, Demo, Training, API Certifications and Consulting available at http://getkong.org/enterprise.
-
-## License
+#### Git Clone
 
 ```
-Copyright 2015 Mashape, Inc
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+$ git clone https://github.com/jason-riddle/kong-plugin-example.git --recursive
 ```
 
-[kong-url]: http://getkong.org/
-[kong-docs]: http://getkong.org/docs/
+OR
 
-[kong-logo]: http://i.imgur.com/4jyQQAZ.png
-[kong-benefits]: http://cl.ly/image/1B3J3b3h1H1c/Image%202015-07-07%20at%206.57.25%20PM.png
+```
+$ git clone https://github.com/jason-riddle/kong-plugin-example.git
+$ git submodule update --init
+```
 
-[mashape-url]: https://www.mashape.com
+#### Vagrant Up
 
-[travis-url]: https://travis-ci.org/Mashape/kong
-[travis-badge]: https://img.shields.io/travis/Mashape/kong.svg?style=flat
 
-[circleci-url]: https://circleci.com/gh/Mashape/kong
-[circleci-badge]: https://circleci.com/gh/Mashape/kong.svg?style=shield
+```
+$ cd kong-vagrant/
+$ KONG_PATH=../kong/ vagrant up
+$ vagrant ssh
+vagrant@precise64:~$ cd /kong/
+vagrant@precise64:~$ sudo make dev
+```
 
-[gitter-url]: https://gitter.im/Mashape/kong
-[gitter-badge]: https://img.shields.io/badge/Gitter-Join%20Chat-blue.svg
+## Let's code our plugin!
 
-[google-groups-url]: https://groups.google.com/forum/#!forum/konglayer
+First, you need to create the following 3 files in `$KONG_PATH/kong/plugins/helloworld`.
+
+```
+kong/
+├── kong/
+│    └── plugins/
+│         └── helloworld/
+│               ├── access.lua
+│               ├── handler.lua
+│               └── schema.lua
+└── ...
+```
+
+- <code>access.lua</code>: This will contain the core logic for the plugin (Adding the header "Hello-World" to the response)
+
+- <code>handler.lua</code>: We will declare our new helloworld plugin in here
+
+- <code>schema.lua</code>: Define the configuration schema of the plugin.
+
+#### schema.lua
+
+```lua
+return {
+  no_consumer = true,
+  fields = {
+    say_hello = { type = "boolean", default = true }
+  }
+}
+```
+
+In this case, tell Kong that our plugin does not handle consumers (see [Kong's docs](https://getkong.org/docs/0.5.x/getting-started/adding-consumers/) on more about this) and has one boolean configuration parameter: <code>say_hello</code>, whose default value is <code>true</code>.
+
+#### handler.lua
+
+```lua
+local BasePlugin = require "kong.plugins.base_plugin"
+local access = require "kong.plugins.helloworld.access"
+
+local HelloWorldHandler = BasePlugin:extend()
+
+function HelloWorldHandler:new()
+  HelloWorldHandler.super.new(self, "helloworld")
+end
+
+function HelloWorldHandler:access(conf)
+  HelloWorldHandler.super.access(self)
+  access.execute(conf)
+end
+
+return HelloWorldHandler
+```
+
+#### access.lua
+
+```lua
+local _M = {}
+
+function _M.execute(conf)
+  if conf.say_hello then
+    ngx.log(ngx.ERR, "============ A World! ============")
+    ngx.header["a-world"] = "a-world"
+  else
+    ngx.log(ngx.ERR, "============ B World! ============")
+    ngx.header["b-world"] = "b-world"
+  end
+  ngx.log(ngx.ERR, "============ C World! ============")
+  ngx.header["c-world"] = "c-world"
+end
+
+return _M
+```
+
+## Let's register our plugin in Kong
+
+#### $KONG_PATH/kong-0.5.0-1.rockspec
+
+```lua
+package = "kong"
+version = "0.5.0-1"
+supported_platforms = {"linux", "macosx"}
+source = {
+  url = "git://github.com/Mashape/kong",
+  tag = "0.5.0"
+}
+description = {
+  ...
+}
+dependencies = {
+  ...
+}
+build = {
+  type = "builtin",
+  modules = {
+    ...
+
+    ["kong.plugins.hmac-auth.handler"] = "kong/plugins/hmac-auth/handler.lua",
+    ["kong.plugins.hmac-auth.access"] = "kong/plugins/hmac-auth/access.lua",
+    ["kong.plugins.hmac-auth.schema"] = "kong/plugins/hmac-auth/schema.lua",
+    ["kong.plugins.hmac-auth.api"] = "kong/plugins/hmac-auth/api.lua",
+    ["kong.plugins.hmac-auth.daos"] = "kong/plugins/hmac-auth/daos.lua",
+
+    ["kong.plugins.helloworld.handler"] = "kong/plugins/helloworld/handler.lua",
+    ["kong.plugins.helloworld.access"] = "kong/plugins/helloworld/access.lua",
+    ["kong.plugins.helloworld.schema"] = "kong/plugins/helloworld/schema.lua"
+
+  },
+  install = {
+    ...
+  }
+}
+```
+
+## Let's configure the kong.yml
+
+#### $KONG_PATH/kong.yml
+
+```lua
+## Available plugins on this server
+plugins_available:
+  - ssl
+  - jwt
+  - acl
+  - cors
+  - oauth2
+  - tcp-log
+  - udp-log
+  - file-log
+  - http-log
+  - key-auth
+  - hmac-auth
+  - basic-auth
+  - ip-restriction
+  - mashape-analytics
+  - request-transformer
+  - response-transformer
+  - request-size-limiting
+  - rate-limiting
+  - response-ratelimiting
+  - helloworld
+
+  ...
+```
+
+Run the following to generate <code>kong_DEVELOPMENT.yml</code>
+
+```
+vagrant@precise64:/kong$ sudo make dev
+```
+
+## Let's unit test!
+
+```lua
+kong/
+├── spec/
+│    └── plugins/
+│         └── helloworld/
+│               └── access_spec.lua
+└── ...
+```
+
+#### access_spec.lua
+
+```lua
+local spec_helper = require "spec.spec_helpers"
+local http_client = require "kong.tools.http_client"
+
+local STUB_GET_URL = spec_helper.STUB_GET_URL
+local STUB_POST_URL = spec_helper.STUB_POST_URL
+
+describe("HelloWorld Plugin", function()
+
+  setup(function()
+    spec_helper.prepare_db()
+
+    spec_helper.insert_fixtures {
+      api = {
+        { name = "tests-helloworld3", request_host = "mockbin1.com", upstream_url = "http://mockbin.com" },
+        { name = "tests-helloworld4", request_host = "mockbin2.com", upstream_url = "http://mockbin.com" }
+      },
+      plugin = {
+        { name = "helloworld", config = { say_hello = true }, __api = 1 },
+        { name = "helloworld", config = { say_hello = false }, __api = 2 },
+      }
+    }
+
+    spec_helper.start_kong()
+  end)
+
+  teardown(function()
+    spec_helper.drop_db()
+    spec_helper.stop_kong()
+  end)
+
+  describe("Response", function()
+
+     it("should return an a-world header with a-world value when say_hello is true", function()
+        local _, status, headers = http_client.get(STUB_GET_URL, {}, {host = "mockbin1.com"})
+        -- for key,value in pairs(headers) do print(key,value) end
+        assert.are.equal(200, status)
+        assert.are.same("a-world", headers['a-world'])
+        assert.is.falsy(headers['b-world'])
+        assert.is.truthy(headers['c-world'])
+      end)
+
+     it("should return an b-world header value with b-world when say_hello is false", function()
+        local _, status, headers = http_client.get(STUB_GET_URL, {}, {host = "mockbin2.com"})
+        -- for key,value in pairs(headers) do print(key,value) end
+        assert.are.equal(200, status)
+        assert.is.falsy(headers['a-world'])
+        assert.are.same("b-world", headers['b-world'])
+        assert.is.truthy(headers['c-world'])
+      end)
+
+     -- it("should return an Hello-World headasdasdorld!!! value when say_hello is true", function()
+     --    local _, status, headers = http_client.get(STUB_GET_URL, {}, {host = "mockbin2.com"})
+     --    -- for key,value in pairs(headers) do print(key,value) end
+     --    assert.are.equal(200, status)
+     --    assert.is.falsy(headers['A-world'])
+     --    assert.is.falsy(headers['B-world'])
+     --    assert.is.falsy(headers['C-world'])
+     --  end)
+
+  end)
+end)
+```
+
+To test all plugins
+
+```
+vagrant@precise64:/kong$ sudo make test-plugins
+```
+
+To test only the helloworld plugin
+
+```
+vagrant@precise64:/kong$ sudo busted -v spec/plugins/helloworld
+```
