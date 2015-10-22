@@ -1,0 +1,3 @@
+[submodule "kong-vagrant"]
+	path = kong-vagrant
+	url = https://github.com/Mashape/kong-vagrant.git
